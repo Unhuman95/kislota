@@ -1,26 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 
-import { createTables, testData, deleteDB, db, selectAll } from './DB/data_base';
 import { LoginStackNavigator } from './navigation/stack';
-import { RoleProvider } from './context';
+import { AuthProvider, AuthContext  } from './context';
 import TabNavigation from './navigation/tab';
 
 const App = () => {
-  useEffect(() => {
-    //deleteDB();
-    createTables(); 
-    //testData();
-    selectAll()
-  }, []);
-
   return (
-    <RoleProvider>
-      <NavigationContainer>
-        <LoginStackNavigator/>
-      </NavigationContainer>
-    </RoleProvider>
+    <AuthProvider>
+      <MainScreen/>
+    </AuthProvider>
   );
 };
+
+const MainScreen = () => {
+  const { user, loading } = useContext(AuthContext);
+
+  //if (loading) return <LoadingScreen />;
+
+  return (
+    <NavigationContainer>
+      {user ? <TabNavigation/> : <LoginStackNavigator/>}     
+    </NavigationContainer>
+  );
+}
 
 export default App;

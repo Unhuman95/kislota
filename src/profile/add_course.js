@@ -2,9 +2,9 @@ import  React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
-import { addCourse, selectClass, selectTraning, selectStudents } from '../DB/data_base';
+import { addCourse, selectClass, selectTraining, selectStudents } from '../DB/appel';
 
-const AddIntoCourse = ({navigation}) => {
+const AddIntoCourse = ({ navigation }) => {
     const [kid, setKid] = useState(null);
 
     const [discipline, setDiscipline] = useState(null);
@@ -15,7 +15,7 @@ const AddIntoCourse = ({navigation}) => {
     let [purposes, setPurposes] = useState([]);
 
     const IntoCourse = () => {
-        addCourse({ kid, discipline, purpose });
+        addCourse(kid, discipline, purpose);
         navigation.goBack();
     }
 
@@ -23,8 +23,8 @@ const AddIntoCourse = ({navigation}) => {
         const search = async() =>{
             const kidsList = await selectStudents();
             const kidsItem = kidsList.map((item) => ({
-                label: item.full_name_student,
-                value: item.ID_student,
+                label: item.full_name,
+                value: item.ID_user,
               }));
             setKids(kidsItem);
 
@@ -35,10 +35,10 @@ const AddIntoCourse = ({navigation}) => {
               }));
             setDisciplines(disciplinesItem);
             
-            const purposesList = await selectTraning();
+            const purposesList = await selectTraining();
             const purposesItem = purposesList.map((item) => ({
-                label: item.title_traning,
-                value: item.ID_traning,
+                label: item.title_training,
+                value: item.ID_training
               }));
             setPurposes(purposesItem);
         };

@@ -1,52 +1,53 @@
-import React, { useState } from 'react'
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
+import React, { useState, useContext } from 'react'
+import { View, TouchableOpacity, Text, StyleSheet, TextInput } from 'react-native';
 
-import { useRole } from '../context';
-
-const rolesPermissions = {
-    methodologist: ['add_lesson', 'update_lesson', 'update_course', 'delete_student'],
-    student: ['registration', 'add_course'],
-    tutor: ['add_task', 'update_task']
-}
-
-const hasPermission = (role, action) => {
-    const permissions = rolesPermissions[role] || [];
-    return permissions.includes(action);
-}
+import { AuthContext, AuthProvider } from '../context';
 
 const Login = ({navigation}) => {
-    const { setRole } = useRole();
-    const [role, setSelectedRole] = useState(null);
+    const { signIn, loading } = useContext(AuthContext);
+
+    const [login, setLogin] = useState();
+    const [password, setPassword] = useState();
 
     const Next = () => {
-        setRole(role)
-        navigation.navigate('tab_navigation')
+        signIn(login, password);
+        if (!loading) {
+            navigation.navigate('tab_navigation');
+        }
+    };
+
+    const LogUp = () => {
+        navigation.navigate('registration');
     };
 
     const roles = [{label: 'Методист', value: 'methodologist'}, {label: 'Ученик', value: 'student'}, {label: 'Репетитор', value: 'tutor'}];
     return(
         <View style = {[styles.screen]}>
-            <Text style = {[styles.text, styles.title]}>Войдите в систему</Text>
+            <View style = {[styles.table]}>
+                <Text style = {[styles.text, styles.In]}>Войдите в систему</Text>
+                </View>
             <View style = {[styles.view]}>
-                <RNPickerSelect
-                    style={{
-                        inputIOS: {
-                            color: 'black',  // Цвет текста для iOS
-                            margin: 10,
-                        },
-                        inputAndroid: {
-                            color: 'black',  // Цвет текста для Android
-                            margin: 10,
-                        },
-                        }}
-                    placeholder={{ label: "Выберете роль", value: null }}
-                    onValueChange={(value) => setSelectedRole(value)}
-                    items = {roles}
-                    value = {role}
-                />
+
+                <View style = {styles.conteiner}>
+                    <Text style = {styles.title}>Логин:</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={login}
+                        onChangeText={(value) => setLogin(value)}
+                    />
+                </View>
+
+                <View style = {styles.conteiner}>
+                    <Text style = {styles.title}>Пароль:</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={password}
+                        onChangeText={(value) => setPassword(value)}
+                    />
+                </View>
 
                 <TouchableOpacity onPress = {Next}><Text style = {[styles.text, styles.next]}>Вход</Text></TouchableOpacity>
+                <TouchableOpacity onPress = {LogUp}><Text style = {[styles.text, styles.next]}>Регистрация</Text></TouchableOpacity>
             </View>
         </View>
     )
@@ -57,10 +58,18 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
     },
+
+    table: {
+        flex: 0.5,
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        margin: 10
+    },
+
     view: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
     },
 
     text: {
@@ -68,9 +77,23 @@ const styles = StyleSheet.create({
         margin: 10,
     },
 
-    title: {
+    conteiner: {
+        //flex: 1,
+        margin: 10,
+    },
+
+    In: {
         textAlign: 'center',
 
+    },
+
+    title: {
+        fontSize: 18,
+        textAlign: 'left'
+    },
+
+    input: {
+        color: "#000000",
     },
 
     next: {
@@ -78,4 +101,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export { Login, hasPermission, rolesPermissions }
+export default Login

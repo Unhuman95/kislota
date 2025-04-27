@@ -1,44 +1,48 @@
-import * as React from 'react';
+import React, { useContext } from 'react'
 import {Text, View, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import { useRole } from '../context';
 import { hasPermission } from '../login/login';
 
+import { AuthContext } from '../context';
 
 export default function Discipline(props) {
-    const { title, count, teacher,  kid, style, lesson, navigation} = props;
-    const { role } = useRole();
+    const { title, count, teacher,  kid, lesson, navigation} = props;
+    const { user } = useContext(AuthContext);
 
-    const handleLongPress = ({id_lesson, day, time}) => {
-      if (hasPermission(role, 'update_lesson')) {
-          navigation.navigate('edit_schedule', { id_lesson, day, time, title, teacher, kid, navigation });
-      }    
+    const handleLongPress = ({ID_lesson, day, time}) => {
+      switch(user.role) {
+        case 'methodologist':
+          navigation.navigate('edit_schedule', { ID_lesson, day, time, title, teacher, kid });
+          break;
+        case 'tutor':
+          navigation.navigate('reschedule', { ID_lesson, day, time, title, teacher, kid });
+          break;
+      }
     };
 
-    const Item = ({ id_lesson, day, time }) => {
-      const dayWeek = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота',]
-      return(
-        <View>
-          <TouchableOpacity style = {[styles.list]}
-            onLongPress={() => handleLongPress({id_lesson, day, time})}>
-              <Text style = {[styles.lesson]}>{dayWeek[day]} - {time}</Text>
-          </TouchableOpacity>
-        </View>
-    )};
-
     return (
-      <View style = {[styles.container, style]}>
-        <View style = {[styles.column, style]}>
+      <View style = {[styles.container]}>
+        <View style = {[styles.title]}>
+          <View style = {[styles.column]}>
           <Text style = {[styles.discipline, styles.text]}>{title}</Text> 
           <Text style = {[styles.count, styles.text]}>{count}</Text>
         </View>
-        <View style = {[styles.column, style]}>
+          <View style = {[styles.column]}>
           <Text style = {[styles.teacher, styles.text]}>Репетитор: {teacher}</Text>
           <Text style = {[styles.kid, styles.text]}>Ученик: {kid}</Text>
         </View>
-        <View style = {[styles.schedule, style]}>
+        </View>
+        <View style = {[styles.schedule]}>
           <FlatList
+            keyExtractor={(item) => item.ID_lesson.toString()}
             data = {lesson}
-            renderItem = {({item}) => <Item day = {item.day} time = {item.time} id_lesson={item.ID_lesson}/>}
+            renderItem = {({item}) => <Item 
+              day = {item.day} 
+              time = {item.time} 
+              ID_lesson = {item.ID_lesson}
+              postponed={item.postponed}
+              handleLongPress = {handleLongPress}
+              />}
             scrollEnabled = {false}
           />
         </View>
@@ -46,7 +50,23 @@ export default function Discipline(props) {
     );
 }
 
+const Item = ({ ID_lesson, day, time, handleLongPress, postponed }) => {
+  const dayWeek = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота',];
+
+  return(
+    <View>
+      <TouchableOpacity
+        onLongPress={() => handleLongPress({ID_lesson, day, time})}>
+          <Text style = {[styles.lesson, { color: postponed == 1 ? 'red' : 'black' }]}>{dayWeek[day]} - {time}</Text>
+      </TouchableOpacity>
+    </View>
+)};
+
 const styles = StyleSheet.create({
+  title: {
+    //flex: 0.5,
+    height: 90,
+  },
   lesson:{
     fontSize: 16,
     margin: 5,
@@ -63,6 +83,7 @@ const styles = StyleSheet.create({
       //backgroundColor: '#ffffff',
       margin: 5,
       flexWrap: 'wrap',
+      height: 50
   },
   discipline: {
     fontSize: 22,

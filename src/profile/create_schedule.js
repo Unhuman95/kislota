@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button} from 'reac
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { selectStudents, selectClassWithID, selectTutorWithID, addLesson } from '../DB/data_base';
+import { selectStudents, selectClassWithID, selectTutorWithID, addLesson } from '../DB/appel';
 
 const CreateSchedule = ({navigation}) => {
     const [kid, setKid] = useState(null);  
@@ -16,11 +16,11 @@ const CreateSchedule = ({navigation}) => {
     const [disciplines, setDisciplines] = useState([]);
     const [teachers, setTeachers] = useState([]);
 
-    const [mode, setMode] = useState('date');
+    const [mode, setMode] = useState('time');
     const [show, setShow] = useState(false);
 
     const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
+        const currentDate = selectedDate || time;
         setShow(false);
         setTime(currentDate);
     };
@@ -30,8 +30,17 @@ const CreateSchedule = ({navigation}) => {
         setMode(currentMode);
     };
 
-    const AddIntoLesson = () => {
-      addLesson({discipline, kid, teacher, time, day});
+    const AddIntoLesson = async() => {
+      const result = await addLesson(
+        parseInt(discipline), 
+        parseInt(kid), 
+        parseInt(teacher), 
+        time, 
+        day
+      );
+    if (result) {
+        setMessage(result.message);
+    }
       navigation.goBack();
   }
 
@@ -39,8 +48,8 @@ const CreateSchedule = ({navigation}) => {
             const search = async() =>{
                 const kidsList = await selectStudents();
                 const kidsItem = kidsList.map((item) => ({
-                    label: item.full_name_student,
-                    value: item.ID_student,
+                    label: item.full_name,
+                    value: item.ID_user,
                   }));
                 setKids(kidsItem); 
             };
@@ -68,8 +77,8 @@ const CreateSchedule = ({navigation}) => {
               if (discipline) { // Проверяем, что значение kid задано
                 const teachersList = await selectTutorWithID({discipline, kid});
                 const teachersItem = teachersList.map((item) => ({
-                  label: item.full_name_tutor,
-                  value: item.ID_tutor,
+                  label: item.full_name,
+                  value: item.ID_user,
                 }));
                 setTeachers(teachersItem);
               }
@@ -86,10 +95,10 @@ const CreateSchedule = ({navigation}) => {
                 <RNPickerSelect
                     style={{
                         inputIOS: {
-                          color: 'black',  // Цвет текста для iOS
+                          color: 'black', 
                         },
                         inputAndroid: {
-                          color: 'black',  // Цвет текста для Android
+                          color: 'black',
                         },
                       }}
                     placeholder={{ label: "Выберете ученика", value: null }}
@@ -103,10 +112,10 @@ const CreateSchedule = ({navigation}) => {
                 <RNPickerSelect
                     style={{
                         inputIOS: {
-                          color: 'black',  // Цвет текста для iOS
+                          color: 'black', 
                         },
                         inputAndroid: {
-                          color: 'black',  // Цвет текста для Android
+                          color: 'black', 
                         },
                       }}
                     placeholder={{ label: "Выберете предмет", value: null }}
@@ -120,10 +129,10 @@ const CreateSchedule = ({navigation}) => {
                 <RNPickerSelect
                     style={{
                         inputIOS: {
-                          color: 'black',  // Цвет текста для iOS
+                          color: 'black', 
                         },
                         inputAndroid: {
-                          color: 'black',  // Цвет текста для Android
+                          color: 'black', 
                         },
                       }}
                     placeholder={{ label: "Выберете репетитора", value: null }}
@@ -137,10 +146,10 @@ const CreateSchedule = ({navigation}) => {
                 <RNPickerSelect
                     style={{
                         inputIOS: {
-                          color: 'black',  // Цвет текста для iOS
+                          color: 'black', 
                         },
                         inputAndroid: {
-                          color: 'black',  // Цвет текста для Android
+                          color: 'black', 
                         },
                       }}
                     placeholder={{ label: "Выберете день недели", value: null }}
@@ -156,7 +165,8 @@ const CreateSchedule = ({navigation}) => {
                 {show && (
                     <DateTimePicker
                         value={time}
-                        mode={mode}
+                        mode= 'time'
+                        is24Hour={true}
                         display="default"
                         onChange={onChange}
                     />

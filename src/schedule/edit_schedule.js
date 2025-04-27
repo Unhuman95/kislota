@@ -3,14 +3,16 @@ import {FlatList, View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
 
-import { updateTime, updateDay, deleteLesson } from '../DB/data_base';
+//import { updateTime, updateDay, deleteLesson } from '../DB/data_base';
 
-const Edit = ({ route }) => {
-    const { id_lesson, day, time, title, teacher, kid, navigation } = route.params;
+import { updateTime, updateDay, deleteLesson } from '../DB/appel';
+
+const Edit = ({ route, navigation }) => {
+    const { ID_lesson, day, time, title, teacher, kid } = route.params;
 
     const [date, setDate] = useState(day);
     const [oldTime, setOldTime] = useState(time);
-    const [newTime, setNewTime] = useState(new Date(time));
+    const [newTime, setNewTime] = useState(time ? new Date(time) : new Date());
 
     const [show, setShow] = useState(false);
 
@@ -26,7 +28,7 @@ const Edit = ({ route }) => {
 
     const UpdateDate = (newDate) => {
         setDate(newDate);
-        updateDay(id_lesson, newDate);
+        updateDay(ID_lesson, newDate);
     }
 
     const showTimePicker = () => {
@@ -39,11 +41,11 @@ const Edit = ({ route }) => {
         setNewTime(currentDate);
         const formattedTime = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}`;
         setOldTime(formattedTime);
-        updateTime(id_lesson, currentDate);
+        updateTime(ID_lesson, currentDate);
     }; 
 
     const dropLesson = () => {
-        deleteLesson(id_lesson);
+        deleteLesson(ID_lesson);
         navigation.goBack();
     }
 
@@ -59,15 +61,15 @@ const Edit = ({ route }) => {
                     <RNPickerSelect
                         style={{
                             inputIOS: {
-                                color: '#b00000',  // Цвет текста для iOS
+                                color: '#b00000',  
                                 margin: 10,
                             },
                             inputAndroid: {
-                                color: '#b00000',  // Цвет текста для Android
+                                color: '#b00000',
                                 margin: 10,
                             },
                         }}
-                        placeholder={{ label: "Выберете предмет", value: null }}
+                        placeholder={{ label: "Выберете день", value: null }}
                         onValueChange={(value) => UpdateDate(value)}
                         items = {days}
                         value = {date}
@@ -81,6 +83,7 @@ const Edit = ({ route }) => {
                     <DateTimePicker
                         value={newTime}
                         mode={'time'}
+                        is24Hour={true}
                         display="default"
                         onChange={onChange}
                     />
