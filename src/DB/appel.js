@@ -13,7 +13,6 @@ const selectLesson = async(id, role) => {
             throw new Error(`Ошибка: ${res.status}`);
         }
         const rows = await res.json();
-        const rawData = [];
         
         const groupedData = groupLessons(rows);
         return groupedData;
@@ -28,7 +27,7 @@ const groupLessons = (data) => {
     const titleMap = new Map();
   
     data.forEach((item) => {
-      const { ID_class, title, count, teacher, kid, ID_lesson, day, time, postponed } = item;
+      const { ID_class, title, count, teacher, kid, ID_lesson, day, time, postponed, date_postponed_lesson } = item;
   
       if (!titleMap.has(ID_class)) {
         titleMap.set(ID_class, {
@@ -42,7 +41,7 @@ const groupLessons = (data) => {
       }
   
       const course = titleMap.get(ID_class);
-      course.lesson.push({ ID_lesson, day, time, postponed });
+      course.lesson.push({ ID_lesson, day, time, postponed, date_postponed_lesson });
     });
   
     titleMap.forEach((value) => result.push(value));
@@ -252,11 +251,11 @@ const updateTutor = async(ID_course, tutor, ID_class) => {
     }
 }
 
-const updateDay = async(id_lesson, day) => {
+const updateDay = async(id_lesson, day, time) => {
     const date = new Date();
     const formattedDate = new Date(date).toISOString().split('T')[0];
     try {
-        const response = await fetch(`${API_URL}update_day`, {
+        const response = await fetch(`${API_URL}update_lesson`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -264,6 +263,7 @@ const updateDay = async(id_lesson, day) => {
             body: JSON.stringify({ 
                 id_lesson,
                 day,
+                time,
                 update_date: formattedDate
             }),
         });
@@ -278,7 +278,7 @@ const updateDay = async(id_lesson, day) => {
     }
 }
 
-const updateTime = async(id_lesson, time) => {
+/*const updateTime = async(id_lesson, time) => {
     const date = new Date();
     const formattedDate = new Date(date).toISOString().split('T')[0];
 
@@ -304,7 +304,7 @@ const updateTime = async(id_lesson, time) => {
     } catch (error) {
         console.error('Ошибка при обновлении:', error);
     }
-}
+}*/
 
 const deleteLesson = async (id) => {
     try {
@@ -367,7 +367,110 @@ const selectUser = async(id) => {
     }
 }
 
+const addNote = async(ID_course, titleData, discription) => {
+    const date = new Date();
+    const formattedDate = new Date(date).toISOString().split('T')[0];
+    try{
+        const res = await fetch(`${API_URL}add_note`, {
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ID_course,
+                titleData,
+                discription,
+                date: formattedDate,
+            }),
+        });
+
+        if(!res.ok) {
+            throw new Error(`Ошибка сервера: ${res.status}`);
+        }
+
+    } catch (error) {
+        console.error('Ошибка при добавлении данных:', error);
+    }
+};
+
+const updateNote = async(ID_note, titleData, discription) => {
+    const date = new Date();
+    const formattedDate = new Date(date).toISOString().split('T')[0];
+    try {
+        const response = await fetch(`${API_URL}update_note`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                ID_note,
+                titleData,
+                discription,
+                update_date: formattedDate
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Ошибка: ${response.status}`);
+        }
+
+        console.log(`Занятие с ID ${id_lesson} обновлено`);
+    } catch (error) {
+        console.error('Ошибка при обновлении:', error);
+    }
+}
+
+const deleteNote = async (id) => {
+    try {
+        const response = await fetch(`${API_URL}delete_note/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            throw new Error(`Ошибка: ${response.status}`);
+        }
+
+        console.log(`Занятие с ID ${id} удалено`);
+    } catch (error) {
+        console.error('Ошибка при удалении:', error);
+    }
+};
+
+const selectContacts = async(id, role) => {
+    try {
+        const res = await fetch(`${API_URL}contacts`, {
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({id, role}),
+        });
+        if (!res.ok) {
+            throw new Error(`Ошибка: ${res.status}`);
+        }
+        return await res.json();
+    } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
+        return [];
+    }
+};
+
+const selectMessages = async(ID_sender, ID_receiver) => {
+    try {
+        const res = await fetch(`${API_URL}messages?user1=${ID_sender}&user2=${ID_receiver}`);
+        if (!res.ok) {
+            throw new Error(`Ошибка: ${res.status}`);
+        }
+        return await res.json();
+    } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
+        return [];
+    }
+}
+
 export { API_URL, addLesson, selectClass, selectTraining, selectStudents, 
-        selectClassWithID, selectTutorWithID, updateDay, updateTime,
+        selectClassWithID, selectTutorWithID, updateDay,
         deleteLesson, selectLesson, addCourse, rescheduleLesson, selectLink,
-        selectData, selectUser, addAboniment, selectTutors }
+        selectData, selectUser, addAboniment, selectTutors, addNote,
+        updateNote, deleteNote, selectContacts, updateTutor, selectMessages,
+         }

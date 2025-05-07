@@ -1,16 +1,18 @@
 import React, { useState, useContext } from 'react'
 import { View, TouchableOpacity, Text, StyleSheet, TextInput } from 'react-native';
 
-import { AuthContext, AuthProvider } from '../context';
+import { AuthContext } from '../context';
+import { connectSocket } from '../DB/appel';
 
 const Login = ({navigation}) => {
-    const { signIn, loading } = useContext(AuthContext);
+    const { signIn, loading, user } = useContext(AuthContext);
 
     const [login, setLogin] = useState();
     const [password, setPassword] = useState();
 
     const Next = () => {
         signIn(login, password);
+
         if (!loading) {
             navigation.navigate('tab_navigation');
         }
@@ -20,7 +22,6 @@ const Login = ({navigation}) => {
         navigation.navigate('registration');
     };
 
-    const roles = [{label: 'Методист', value: 'methodologist'}, {label: 'Ученик', value: 'student'}, {label: 'Репетитор', value: 'tutor'}];
     return(
         <View style = {[styles.screen]}>
             <View style = {[styles.table]}>

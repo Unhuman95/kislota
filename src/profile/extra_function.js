@@ -8,7 +8,6 @@ const Extra = ({navigation}) => {
 
     const signOut = async () => {
         await logout();
-        //setUser(null); 
     };
 
     return (

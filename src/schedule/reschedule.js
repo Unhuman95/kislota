@@ -1,14 +1,11 @@
 import  React, { useState } from 'react';
 import {Button, View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-//import RNPickerSelect from 'react-native-picker-select';
-
-//import { updateTime, updateDay, deleteLesson } from '../DB/data_base';
 
 import { rescheduleLesson } from '../DB/appel';
 
 const Reschedule = ({ route, navigation }) => {
-    const { ID_lesson, time, title, teacher, kid } = route.params;
+    const { ID_lesson, time, title, kid } = route.params;
 
     const [date, setDate] = useState(new Date());
     const [oldTime, setOldTime] = useState(time);
@@ -30,8 +27,8 @@ const Reschedule = ({ route, navigation }) => {
     const onTimeChange = (event, selectedTime) => {
         if (selectedTime) {
             setNewTime(selectedTime);
-            const formattedDate = new Date(date).toISOString().split('T')[0];
-            setOldTime(formattedDate);
+            const formattedTime = `${selectedTime.getHours().toString().padStart(2, '0')}:${selectedTime.getMinutes().toString().padStart(2, '0')}`;
+            setOldTime(formattedTime);
         }
 
         setShowTimePicker(false);

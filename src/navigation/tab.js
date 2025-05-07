@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import Contacts from '../chat/contacts';
-import { ScheduleStackNavigator, DiaryStackNavigator, ExtraStackNavigator, DataStackNavigator } from './stack'
+import { ScheduleStackNavigator, ChatStackNavigator, ExtraStackNavigator, DataStackNavigator } from './stack'
 
 const Tab = createBottomTabNavigator();
 
@@ -14,9 +13,14 @@ const TabNavigation = () => {
                 options={{title: "Расписание"}}
             />
             <Tab.Screen
-                name = "diary_stack"
+                name = "discipline_stack"
                 component = {DataStackNavigator}
-                options={{title: "Дневник"}}
+                options={{title: "Список предметов"}}
+            />
+            <Tab.Screen
+                name = "chat_stack"
+                component = {ChatStackNavigator}
+                options={{title: "чат"}}
             />
             <Tab.Screen
                 name = "menu"

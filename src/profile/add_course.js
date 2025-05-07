@@ -1,33 +1,26 @@
-import  React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button} from 'react-native';
+import  React, { useState, useEffect, useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
+import { AuthContext } from '../context';
 import { addCourse, selectClass, selectTraining, selectStudents } from '../DB/appel';
 
 const AddIntoCourse = ({ navigation }) => {
-    const [kid, setKid] = useState(null);
+    const { user } = useContext(AuthContext);
 
     const [discipline, setDiscipline] = useState(null);
     const [purpose, setPurpose] = useState(null);
 
-    let [kids, setKids] = useState([]);
-    let [disciplines, setDisciplines] = useState([]);
-    let [purposes, setPurposes] = useState([]);
+    const [disciplines, setDisciplines] = useState([]);
+    const [purposes, setPurposes] = useState([]);
 
     const IntoCourse = () => {
-        addCourse(kid, discipline, purpose);
+        addCourse(user.ID_user, discipline, purpose);
         navigation.goBack();
     }
 
     useEffect(() => {
         const search = async() =>{
-            const kidsList = await selectStudents();
-            const kidsItem = kidsList.map((item) => ({
-                label: item.full_name,
-                value: item.ID_user,
-              }));
-            setKids(kidsItem);
-
             const disciplinesList = await selectClass();
             const disciplinesItem = disciplinesList.map((item) => ({
                 label: item.title_class,
@@ -48,23 +41,6 @@ const AddIntoCourse = ({ navigation }) => {
 
     return(
         <View style = {[styles.list]}>
-            <View>
-                <Text style = {styles.title}>Ученик:</Text>
-                <RNPickerSelect
-                    style={{
-                        inputIOS: {
-                          color: 'black',  // Цвет текста для iOS
-                        },
-                        inputAndroid: {
-                          color: 'black',  // Цвет текста для Android
-                        },
-                      }}
-                    placeholder={{ label: "Выберете ученика", value: null }}
-                    onValueChange={(value) => setKid(value)}
-                    value={kid}
-                    items = {kids}
-                    />
-            </View>
             <View>
                 <Text style = {styles.title}>Дисциплина:</Text>
                 <RNPickerSelect

@@ -1,16 +1,17 @@
-import  React, { useState } from 'react';
-import {FlatList, View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import  React, { useState, useContext } from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
 
-//import { updateTime, updateDay, deleteLesson } from '../DB/data_base';
-
-import { updateTime, updateDay, deleteLesson } from '../DB/appel';
+import { AuthContext } from '../context';
+import { updateLesson, deleteLesson } from '../DB/appel';
 
 const Edit = ({ route, navigation }) => {
-    const { ID_lesson, day, time, title, teacher, kid } = route.params;
+    const { user } = useContext(AuthContext);
+    const { ID_lesson, day, time, title, teacher, kid, date_postponed_lesson } = route.params;
 
-    const [date, setDate] = useState(day);
+    const [newDay, setNewDay] = useState(day);
+    const [date, setDate] = useContext(new Date(date_postponed_lesson));
     const [oldTime, setOldTime] = useState(time);
     const [newTime, setNewTime] = useState(time ? new Date(time) : new Date());
 
@@ -26,9 +27,8 @@ const Edit = ({ route, navigation }) => {
         {label: "Суббота", value: 6}
     ];
 
-    const UpdateDate = (newDate) => {
-        setDate(newDate);
-        updateDay(ID_lesson, newDate);
+    const changeLesson = () => {
+        updateLesson(ID_lesson, newDay, oldTime);
     }
 
     const showTimePicker = () => {
@@ -41,7 +41,6 @@ const Edit = ({ route, navigation }) => {
         setNewTime(currentDate);
         const formattedTime = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}`;
         setOldTime(formattedTime);
-        updateTime(ID_lesson, currentDate);
     }; 
 
     const dropLesson = () => {
@@ -53,28 +52,34 @@ const Edit = ({ route, navigation }) => {
         <View style = {[styles.list]}>
             <View>
                 <Text style = {[styles.text]}>{ title }</Text>
-                <Text style = {[styles.text]}>Репетитор: { teacher }</Text>
+                {user.role === 'methodologist' && (
+                    <Text style = {[styles.text]}>Репетитор: { teacher }</Text>
+                )}
                 <Text style = {[styles.text]}>Ученик: { kid }</Text>
             </View>
             <View style = {[styles.element]}>
-                <View style={{ height: 50 }}>
-                    <RNPickerSelect
-                        style={{
-                            inputIOS: {
-                                color: '#b00000',  
-                                margin: 10,
-                            },
-                            inputAndroid: {
-                                color: '#b00000',
-                                margin: 10,
-                            },
-                        }}
-                        placeholder={{ label: "Выберете день", value: null }}
-                        onValueChange={(value) => UpdateDate(value)}
-                        items = {days}
-                        value = {date}
-                    />
-                </View>
+                {user.role === 'methodologist' && (
+                    <View style={{ flex: 1,  }}>
+                        <RNPickerSelect
+                            style={{
+                                inputIOS: {
+                                    color: '#b00000',  
+                                    margin: 5,
+                                    padding: 10,
+                                },
+                                inputAndroid: {
+                                    color: '#b00000',
+                                    margin: 5,
+                                    padding: 10,
+                                },
+                            }}
+                            placeholder={{ label: "Выберете день", value: null }}
+                            onValueChange={(value) => setNewDay(value)}
+                            items = {days}
+                            value = {newDay}
+                        />
+                    </View>
+                )}
 
                 <TouchableOpacity  onLongPress={showTimePicker} style = {[styles.datetime]}>
                     <Text style = {[styles.textDateTime]}>{oldTime}</Text>
@@ -91,7 +96,13 @@ const Edit = ({ route, navigation }) => {
             </View>
             <View style={{flex: 1}} />
             <View>
-                <TouchableOpacity style = {{margin: 20}} onPress={dropLesson}><Text style = {styles.end}>Удалить урок их расписания</Text></TouchableOpacity>
+                <TouchableOpacity style = {{margin: 10}} onPress={changeLesson}>
+                    <Text style = {styles.end}>Сохранить изменения</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style = {{margin: 10}} onPress={dropLesson}>
+                    <Text style = {styles.end}>Удалить урок из расписания</Text>
+                </TouchableOpacity>
             </View>            
         </View>
     )

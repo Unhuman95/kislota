@@ -53,8 +53,8 @@ const Data = ({ navigation }) => {
         }, [])
     );
 
-    const handleLongPress = ({ ID_course, kid, teacher, title, navigation }) => {
-      navigation.navigate('note_list', { ID_course, kid, teacher, title });
+    const handleLongPress = ({ ID_course, kid, teacher, title, link, navigation }) => {
+      navigation.navigate('note_list', { ID_course, kid, teacher, title, link });
     };
 
     const rowRenderer = (type, data) => {
@@ -63,7 +63,7 @@ const Data = ({ navigation }) => {
           case ViewTypes.FULL:
               return (
                 <TouchableOpacity style = {{flex: 1}}
-                onLongPress={() => handleLongPress({ID_course, kid, teacher, title, navigation})}>
+                  onPress={() => handleLongPress({ID_course, kid, teacher, title, link, navigation})}>
                   <View style = {[styles.container]}>
                     <View style = {[styles.title]}>
                       <View style = {[styles.column]}>

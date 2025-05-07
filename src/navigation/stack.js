@@ -5,9 +5,9 @@ import ScheduleList from '../schedule/schedule_list';
 import EditSchedule from '../schedule/edit_schedule';
 import Reschedule from '../schedule/reschedule';
 
-import TaskList from '../diary/diary';
-import EditTask from '../diary/edit_task';
-import AddTask from '../diary/add_task';
+//import TaskList from '../diary/diary';
+//import EditTask from '../diary/edit_task';
+//import AddTask from '../diary/add_task';
 
 import CreateSchedule from '../profile/create_schedule';
 import ExtraFunction from '../profile/extra_function';
@@ -18,6 +18,11 @@ import Student from '../profile/student';
 
 import Data from '../extra_data/data_list';
 import Note from '../extra_data/note';
+import EditData from '../extra_data/edit_data';
+import AddData from '../extra_data/create_data';
+
+import Contacts from '../chat/contacts';
+import ChatScreen from '../chat/dialogue';
 
 import Login from '../login/login';
 import TabNavigation from './tab';
@@ -75,14 +80,29 @@ const DataStackNavigator = () => {
                 component={Note}
                 options={{title: "Заметки по курсу"}}/>
             <Stack.Screen 
-                name= "profile_settings" 
-                component={ProfileSettings}
-                options={{title: "Настройки профиля"}}/>
+                name= "edit_data" 
+                component={EditData}
+                options={{title: "Редактирование заметки"}}/>
             <Stack.Screen 
-                name= "add_course" 
-                component={AddIntoCourse}
-                options={{title: "Добавить курс"}}/>
+                name= "add_data" 
+                component={AddData}
+                options={{title: "Добавить заметку"}}/>
         </Stack.Navigator>
+    )
+};
+
+const ChatStackNavigator = () => {
+    return(
+        <Stack.Navigator>
+            <Stack.Screen 
+                name = "contacts" 
+                component = {Contacts}
+                options={{title: "Список контактов"}}/>
+            <Stack.Screen 
+                name= "chat_screen" 
+                component={ChatScreen}
+                options={{title: "Пользователь"}}/>
+    </Stack.Navigator>
     )
 };
     const ExtraStackNavigator = () => {
@@ -116,7 +136,7 @@ const DataStackNavigator = () => {
             </Stack.Navigator>
 )};
 
-const DiaryStackNavigator = () => {
+/*const DiaryStackNavigator = () => {
     return(
     <Stack.Navigator>
         <Stack.Screen 
@@ -132,7 +152,7 @@ const DiaryStackNavigator = () => {
             component={AddTask}
             options={{title: "Добавить задание"}}/>
     </Stack.Navigator>
-)};
+)};*/
 
-export {ScheduleStackNavigator, DiaryStackNavigator, ExtraStackNavigator,
-        LoginStackNavigator, DataStackNavigator};
+export {ScheduleStackNavigator, ExtraStackNavigator,
+        LoginStackNavigator, DataStackNavigator, ChatStackNavigator};

@@ -4,7 +4,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { useFocusEffect } from "@react-navigation/native";
 import { AuthContext } from '../context';
 
-import { selectClassWithID, selectTutors } from '../DB/appel';
+import { selectClassWithID, selectTutors, updateTutor } from '../DB/appel';
 
 export default function Student({route, navigation}) {
     const { ID_student, full_name, Email, phone_number, school_class } = route.params;
@@ -51,7 +51,7 @@ export default function Student({route, navigation}) {
 
       const update = () => {
         updateTutor(ID_course, tutor, ID_class);
-        Alert('Репетитор изменен');
+        //Alert('Репетитор изменен');
       }
 
       return(
@@ -115,9 +115,7 @@ const styles = StyleSheet.create({
     padding: 3,
   },
   text: {
-      //backgroundColor: 'black',
       margin: 5,
-      //flexWrap: 'wrap',
       fontSize: 18,
       flex: 1,
   },

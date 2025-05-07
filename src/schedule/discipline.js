@@ -1,7 +1,5 @@
 import React, { useContext } from 'react'
 import {Text, View, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
-import { useRole } from '../context';
-import { hasPermission } from '../login/login';
 
 import { AuthContext } from '../context';
 
@@ -9,13 +7,13 @@ export default function Discipline(props) {
     const { title, count, teacher,  kid, lesson, navigation} = props;
     const { user } = useContext(AuthContext);
 
-    const handleLongPress = ({ID_lesson, day, time}) => {
+    const handleLongPress = ({ID_lesson, day, time, postponed, date_postponed_lesson}) => {
       switch(user.role) {
-        case 'methodologist':
-          navigation.navigate('edit_schedule', { ID_lesson, day, time, title, teacher, kid });
+        case 'methodologist' :
+          if (postponed == 0) navigation.navigate('edit_schedule', { ID_lesson, day, time, title, teacher, kid, date_postponed_lesson });
           break;
         case 'tutor':
-          navigation.navigate('reschedule', { ID_lesson, day, time, title, teacher, kid });
+          if (postponed == 0) navigation.navigate('reschedule', { ID_lesson, day, time, title, teacher, kid });
           break;
       }
     };
@@ -41,6 +39,7 @@ export default function Discipline(props) {
               time = {item.time} 
               ID_lesson = {item.ID_lesson}
               postponed={item.postponed}
+              date_postponed_lesson = {item.date_postponed_lesson}
               handleLongPress = {handleLongPress}
               />}
             scrollEnabled = {false}
@@ -50,13 +49,13 @@ export default function Discipline(props) {
     );
 }
 
-const Item = ({ ID_lesson, day, time, handleLongPress, postponed }) => {
+const Item = ({ ID_lesson, day, time, handleLongPress, postponed, date_postponed_lesson }) => {
   const dayWeek = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота',];
 
   return(
     <View>
       <TouchableOpacity
-        onLongPress={() => handleLongPress({ID_lesson, day, time})}>
+        onLongPress={() => handleLongPress({ID_lesson, day, time, postponed, date_postponed_lesson})}>
           <Text style = {[styles.lesson, { color: postponed == 1 ? 'red' : 'black' }]}>{dayWeek[day]} - {time}</Text>
       </TouchableOpacity>
     </View>
