@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button} from 'reac
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+import styles from '../../design/style';
 import { selectStudents, selectClassWithID, selectTutorWithID, addLesson } from '../DB/appel';
 
 const CreateSchedule = ({navigation}) => {
@@ -89,16 +90,18 @@ const CreateSchedule = ({navigation}) => {
 
     const days = [{label: "Воскресенье", value: 0}, {label: "Понедельник", value: 1}, {label: "Вторник", value: 2}, {label: "Среда", value: 3}, {label: "Четверг", value: 4}, {label: "Пятница", value: 5}, {label: "Суббота", value: 6},];
     return(
-        <View style = {[styles.list]}>
-            <View>
-                <Text style = {styles.title}>Ученик:</Text>
+        <View style = {[styles.view]}>
+            <View style={{marginHorizontal: 20}}>
+                <Text style = {styles.name}>Ученик:</Text>
                 <RNPickerSelect
                     style={{
                         inputIOS: {
-                          color: 'black', 
+                          color: '#FFFFFF',  
+                          fontSize: 20, 
                         },
                         inputAndroid: {
-                          color: 'black',
+                          color: '#FFFFFF',  
+                          fontSize: 20,
                         },
                       }}
                     placeholder={{ label: "Выберете ученика", value: null }}
@@ -107,15 +110,17 @@ const CreateSchedule = ({navigation}) => {
                     items = {kids}
                     />
             </View>
-            <View>
-                <Text style = {styles.title}>Дисциплина:</Text>
+            <View style={{marginHorizontal: 20}}>
+                <Text style = {styles.name}>Дисциплина:</Text>
                 <RNPickerSelect
                     style={{
                         inputIOS: {
-                          color: 'black', 
+                          color: '#FFFFFF',  
+                          fontSize: 20, 
                         },
                         inputAndroid: {
-                          color: 'black', 
+                          color: '#FFFFFF',  
+                          fontSize: 20, 
                         },
                       }}
                     placeholder={{ label: "Выберете предмет", value: null }}
@@ -124,15 +129,17 @@ const CreateSchedule = ({navigation}) => {
                     value = {discipline}
                     />
             </View>
-            <View>
-                <Text style = {styles.title}>Репетитор:</Text>
+            <View style={{marginHorizontal: 20}}>
+                <Text style = {styles.name}>Репетитор:</Text>
                 <RNPickerSelect
                     style={{
                         inputIOS: {
-                          color: 'black', 
+                          color: '#FFFFFF',  
+                          fontSize: 20, 
                         },
                         inputAndroid: {
-                          color: 'black', 
+                          color: '#FFFFFF',  
+                          fontSize: 20, 
                         },
                       }}
                     placeholder={{ label: "Выберете репетитора", value: null }}
@@ -141,15 +148,17 @@ const CreateSchedule = ({navigation}) => {
                     value={teacher}
                     />
             </View>
-            <View>
-                <Text style = {styles.title}>День недели:</Text>
+            <View style={{marginHorizontal: 20}}>
+                <Text style = {styles.name}>День недели:</Text>
                 <RNPickerSelect
                     style={{
                         inputIOS: {
-                          color: 'black', 
+                          color: '#FFFFFF',  
+                          fontSize: 20, 
                         },
                         inputAndroid: {
-                          color: 'black', 
+                          color: '#FFFFFF',  
+                          fontSize: 20, 
                         },
                       }}
                     placeholder={{ label: "Выберете день недели", value: null }}
@@ -157,11 +166,10 @@ const CreateSchedule = ({navigation}) => {
                     items = {days}
                     value = {day}
                     />
-            </View>
-                
-            <View>
-                <Text style = {styles.title}>Время проведения:</Text> 
-                <Button color = {"#808080"} onPress={() => showMode('time')} title="Выбрать время" />
+            </View>   
+            <View style={{marginHorizontal: 20}}>
+                <Text style = {styles.name}>Время проведения:</Text> 
+                <Button color = {"#00A8BA"} onPress={() => showMode('time')} title="Выбрать время" />
                 {show && (
                     <DateTimePicker
                         value={time}
@@ -172,15 +180,14 @@ const CreateSchedule = ({navigation}) => {
                     />
                 )}              
             </View>
-            <View style={{flex: 1}} />
-            <View>
+            <View style = {[styles.transition]}>
               <TouchableOpacity onPress={AddIntoLesson} style = {{margin: 10}}><Text style = {styles.end}>Добавить</Text></TouchableOpacity>
             </View>
         </View>
     )
 }
 
-const styles = StyleSheet.create({
+/*const styles = StyleSheet.create({
     button: {
         tintColor: "#808080",
     },
@@ -200,6 +207,6 @@ const styles = StyleSheet.create({
       fontSize: 20,
       color: "#008800",
     }
-});
+});*/
 
 export default CreateSchedule

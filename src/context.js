@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
+
 import { io } from "socket.io-client";
 
 
@@ -23,6 +25,10 @@ const AuthProvider = ({ children }) => {
           });
 
           if (!res.ok) {
+            Toast.show({
+              type: 'error',
+              text1: 'Неправильно введен логин или пароль',
+            });
             throw new Error(`Ошибка: ${res.status}`);
           }
   
@@ -57,8 +63,7 @@ const AuthProvider = ({ children }) => {
   };
   
   const logout = async () => {
-      await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("user");
+      await AsyncStorage.clear();
 
       setUser(null);
       disconnectSocket();
@@ -96,7 +101,7 @@ const AuthProvider = ({ children }) => {
 
     return (
     <AuthContext.Provider value={{ user, signIn, logout, loading, socket: socketRef.current }}>
-            {children}
+      {children}
     </AuthContext.Provider>
     );
 };

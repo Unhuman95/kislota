@@ -1,7 +1,9 @@
-import React, { useContext, useState, useCallback } from 'react'
-import {View, FlatList, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
+import React, { useContext, useState, useCallback, useEffect } from 'react'
+import {View, FlatList, StyleSheet, Text, Image, TouchableOpacity, ActivityIndicator} from 'react-native';
 import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import styles from '../../design/style';
 import { selectContacts } from '../DB/appel';
 import { AuthContext } from '../context';
 
@@ -9,42 +11,87 @@ import { AuthContext } from '../context';
 const ContactList = ({ navigation }) => {
   const { user } = useContext(AuthContext);
 
-  const [contscts, setContacts] = useState();
+  const [contacts, setContacts] = useState();
   
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  //const CACHE_TTL = 10 * 60 * 1000; // 10 минут в миллисекундах
+  const cacheKey = `contacts_${user.ID_user}`;
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadFromCache = async () => {
+      try {
+        const cached = await AsyncStorage.getItem(cacheKey);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed?.contacts && isMounted) {
+            setContacts(parsed.contacts);
+          }
+        }
+      } catch (err) {
+        console.warn('Не удалось загрузить кэш:', err);
+      }
+    };
+
+    const init = async () => {
+        await loadFromCache();
+        await fetchTasks();
+    };
+
+    init();
+
+    return () => {
+      isMounted = false;
+    };
+    }, [user.ID_user, user.role]);
+
   const fetchTasks = async () => {
     try {
-        const contactList = await selectContacts(user.ID_user, user.role);
-        setContacts(contactList);
+      const freshData = await selectContacts(user.ID_user, user.role);
+      setContacts(freshData);
+      await AsyncStorage.setItem(
+        cacheKey,
+        JSON.stringify({ contacts: freshData, timestamp: Date.now() })
+      );
     } catch (error) {
-        console.error("Ошибка при загрузке данных:", error);
+      console.error('Ошибка при загрузке данных с сервера:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  useFocusEffect(
-      useCallback(() => {
-          fetchTasks();
-      }, [])
-  );
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchTasks();
+  };
 
   const handlePress = (name, id) => {
     navigation.navigate('chat_screen', {name, id});
   }
 
-  return (<View style={styles.container}>
-    <FlatList
-      data={contscts}
-      renderItem={({item}) => 
-        <Item 
-          name={item.name} 
-          id={item.ID_contact} 
-          last_message={item.last_message}
-          time_stamp={item.time_stamp}
-          //image = {item.image}
-          handlePress = {handlePress}
-        />}
-        keyExtractor={(item) => item.ID_contact.toString()}
-    />
-  </View>
+  return (
+    <View style={styles.view}>
+      {loading ? (
+        <ActivityIndicator size="large" />):
+        (<FlatList
+          data={contacts}
+          renderItem={({item}) => 
+            <Item 
+              name={item.name} 
+              id={item.ID_contact} 
+              last_message={item.last_message}
+              time_stamp={item.time_stamp}
+              //image = {item.image}
+              handlePress = {handlePress}
+            />}
+            keyExtractor={(item) => item.ID_contact.toString()}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+        />)}
+    </View>
   )
 };
 
@@ -54,61 +101,20 @@ const Item = ({ name, id, last_message, time_stamp, handlePress }) => {
   const time = isoString.slice(11, 16);
 
   return(
-  <TouchableOpacity style={styles.item} onPress = {() => handlePress(name, id)}>
+  <TouchableOpacity style={styles.container} onPress = {() => handlePress(name, id)}>
     {/*<Image
       source = {{uri: image}}
       style = {styles.avatar}
       resizeMode={'contain'}/>*/}
-    <View style = {styles.text}>
-      <Text style = {styles.name}>{name}</Text>
+    <View style = {styles.contact}>
+      <Text style = {[styles.name]}>{name}</Text>
       <View style = {styles.last}>
-        <Text style = {styles.massage}>{last_message}</Text>
+        <Text style = {styles.last_message}>{last_message}</Text>
         <Text style = {{alignSelf: 'flex-end'}}>{time}</Text>
       </View>
     </View>
   </TouchableOpacity>
-);}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    //marginTop: StatusBar.currentHeight || 0,
-  },
-  text: {
-    flex: 1,
-    flexDirection: "column",
-    margin: 5,
-  },
-  item: {
-    flex: 1,
-    flexDirection: "row",
-    backgroundColor: '#888888',
-    padding: 10,
-    margin: 8,
-    borderRadius: 25,
-    //marginHorizontal: 16,
-  },
-  name: {
-    fontSize: 18,
-  },
-  massage: {
-    fontSize: 16,
-    maxWidth: 300,
-    //backgroundColor: '#000000',
-  },
-  avatar: {
-		width: 50,
-		height: 50,
-		borderRadius: 15,
-	},
-  last: {
-    flex: 1,
-    //backgroundColor: '#000000',
-    flexDirection: 'row',
-    opacity: 0.5,
-    justifyContent: 'space-between',
-    maxHeight: 25,
-  },
-});
+  );
+}
 
 export default ContactList;

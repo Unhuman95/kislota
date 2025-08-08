@@ -4,6 +4,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { useFocusEffect } from "@react-navigation/native";
 import { AuthContext } from '../context';
 
+import styles from '../../design/style';
 import { selectClassWithID, selectTutors, updateTutor } from '../DB/appel';
 
 export default function Student({route, navigation}) {
@@ -55,40 +56,38 @@ export default function Student({route, navigation}) {
       }
 
       return(
-        <View>
-          <TouchableOpacity onPress={() => setVisible(prev => !prev)}>
-            <View style = {styles.element}>
-              <Text style={styles.text}>{title}</Text>
-              <Text style={styles.text}>{training}</Text>
-        </View>
-          </TouchableOpacity>
+        <View style = {[styles.container]}>
+            <TouchableOpacity style = {[styles.column]} onPress={() => setVisible(prev => !prev)}>
+                <Text style={styles.name}>{title}</Text>
+                <Text style={styles.name}>{training}</Text>
+            </TouchableOpacity>
           {visible && tutors && tutors.length > 0 && user.role === 'methodologist' && (
-            <View style={{ marginTop: 10 }}>
+            <View style={{margin:10}}>
               <RNPickerSelect
                 style={{
-                  inputIOS: { color: 'black' },
-                  inputAndroid: { color: 'black' },
+                  inputIOS: { color: '#FFFFFF' },
+                  inputAndroid: { color: '#FFFFFF' },
                 }}
                 placeholder={{ label: "Выберете репетитора", value: null }}
                 onValueChange={(value) => setTutor(value)}
                 value={tutor}
                 items={tutors}
               />
-              <Button onPress = {() => update()} title="Изменить"/>
+              <Button color={'#000000'} onPress = {() => update()} title=">>"/>
             </View>
           )}
           </View>
     )};
 
     return (
-      <View style={styles.container}>
-        <View style={styles.title}>
-          <Text style={styles.text}>Ученик: {full_name}</Text>
-          <Text style={styles.text}>Класс: {school_class}</Text>
-          <Text style={styles.text}>Email: {Email}</Text>
-          <Text style={styles.text}>Телефон: {phone_number}</Text>
+      <View style={styles.view}>
+        <View style = {{margin: 10}}>
+          <Text style={styles.name}>Ученик: {full_name}</Text>
+          <Text style={styles.name}>Класс: {school_class}</Text>
+          <Text style={styles.name}>Email: {Email}</Text>
+          <Text style={styles.name}>Телефон: {phone_number}</Text>
         </View>
-        <ScrollView style={styles.schedule}>
+        <ScrollView style={styles.place}>
           {courses && courses.map((item) => (
             <Item
               key={item.ID_class.toString()}
@@ -104,7 +103,7 @@ export default function Student({route, navigation}) {
     );
 }
 
-const styles = StyleSheet.create({
+/*const styles = StyleSheet.create({
   title: {
     margin: 5,
     flex: 0.5,
@@ -118,6 +117,11 @@ const styles = StyleSheet.create({
       margin: 5,
       fontSize: 18,
       flex: 1,
+  },
+  tutors: {
+    marginTop: 10, 
+    //flexDirection: 'row', 
+    //flex: 1,
   },
   container: {
     flex: 1,
@@ -133,4 +137,4 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 5
   },
-})
+})*/

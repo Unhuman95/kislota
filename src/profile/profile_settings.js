@@ -1,19 +1,36 @@
-import  React, { useState, useCallback, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button} from 'react-native';
-import { useFocusEffect, CommonActions } from '@react-navigation/native';
-import RNPickerSelect from 'react-native-picker-select';
+import  React, { useState, useCallback, useContext, useEffect } from 'react';
+import { View, Text, Alert, TouchableOpacity, TextInput, Keyboard, Button} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
-import { selectUser } from '../DB/appel';
+import styles from '../../design/style';
+import { selectUser, changePassword, updateUser } from '../DB/appel';
 import { AuthContext } from '../context';
 
 const ProfileSettings = ({navigation}) => {
-    const { user, logout } = useContext(AuthContext);
-    const routeName = navigation.getState().routes[navigation.getState().index].name;
+    const { user } = useContext(AuthContext);
 
     const [name, setName] = useState(null);
     const [mail, setMail] = useState(null);
     const [course, setCourse] = useState(null);
     const [phone, setPhone] = useState(null);
+
+    const [oldPassword, setOldPassword] = useState(null);
+    const [newPassword, setNewPassword] = useState(null);
+    const [confirmPassword, setConfirmPassword] = useState(null);
+
+    const [keyboardVisible, setKeyboardVisible] = useState(false);
+    const [passChange, setPassChange] = useState(false);
+    const [label, setLabel] = useState('Изменить пароль')
+        
+    useEffect(() => {
+        const showSub = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+        const hideSub = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+
+        return () => {
+            showSub.remove();
+            hideSub.remove();
+        };
+    }, []);
 
     const fetchTasks = async () => {
         try {
@@ -21,7 +38,7 @@ const ProfileSettings = ({navigation}) => {
             setName(dataList.full_name);
             setMail(dataList.Email);
             setCourse(dataList.class);
-            setPhone(dataList.school_class);
+            setPhone(dataList.phone_number);
         } catch (error) {
             console.error("Ошибка при загрузке данных:", error);
         }
@@ -32,72 +49,91 @@ const ProfileSettings = ({navigation}) => {
             fetchTasks();
         }, [])
     );
+
+    const openMenu = () => {
+        setPassChange(prev => !prev);
+        if (!passChange) setLabel('Отмена');
+        else setLabel('Изменить пароль')
+    };
+
+    const update = () => {
+        Alert.alert(
+            'Изменение профиля',
+            'Вы уверены, что хотите изменить профиль?',
+            [
+                { text: 'Отмена', style: 'cancel' },
+                { text: 'ОК', style: "destructive", onPress: () => {
+                    updateUser(user.ID_user, name, phone);
+                }},
+            ],
+            { cancelable: true }
+        );
+    }
     
     return(
-        <View style = {[styles.list]}>
-            <View>
-                <Text style = {styles.title}>ФИО:</Text>
-                <TextInput
-                    style={styles.input}
-                    value={name}
-                    onChangeText={(value) => setName(value)}
-                />
-            </View>
-            <View>
-                <Text style = {styles.title}>E-Mail:</Text>
-                <TextInput
-                    style={styles.input}
-                    value={mail}
-                    onChangeText={(value) => setMail(value)}
-                />
-            </View>
-            <View>
-                <Text style = {styles.title}>Класс:</Text>
-                <TextInput
-                    style={styles.input}
-                    keyboardType='numeric'
-                    value={course}
-                    onChangeText={(value) => setCourse(value)}
-                />
-            </View>
-            <View>
-                <Text style = {styles.title}>Номер телефона:</Text>
-                <TextInput
-                    style={styles.input}
-                    keyboardType='numeric'
-                    value={phone}
-                    onChangeText={(value) => setPhone(value)}
-                />
-            </View>
-            <View style={{flex: 1}} />
-            <View>
-                <TouchableOpacity style = {{margin: 10}}><Text style = {styles.end}>Изменить данные</Text></TouchableOpacity>
+        <View style = {[styles.view]}>
+            <View style = {{flex:1, margin:10}}>
+                <View>
+                    <Text style = {styles.name}>ФИО:</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={name}
+                        onChangeText={(value) => setName(value)}
+                        placeholder="Введите ФИО"
+                        placeholderTextColor='#917F99'
+                    />
+                </View>
                 
+                <View>
+                    <Text style = {styles.name}>Номер телефона:</Text>
+                    <TextInput
+                        style={styles.input}
+                        keyboardType='numeric'
+                        value={phone}
+                        onChangeText={(value) => setPhone(value)}
+                        placeholder="Введите номер телефона"
+                        placeholderTextColor='#917F99'
+                    />
+                </View>
+                {passChange && (
+                    <View style={[styles.place,{marginHorizontal: 20}]}>
+                        <TextInput
+                            placeholder="Старый пароль"
+                            secureTextEntry
+                            value={oldPassword}
+                            onChangeText={setOldPassword}
+                            style={styles.input}
+                            placeholderTextColor='#917F99'
+                        />
+                        <TextInput
+                            placeholder="Новый пароль"
+                            secureTextEntry
+                            value={newPassword}
+                            onChangeText={setNewPassword}
+                            style={styles.input}
+                            placeholderTextColor='#917F99'
+                        />
+                        <TextInput
+                            placeholder="Подтвердите новый пароль"
+                            secureTextEntry
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            style={[styles.input, {marginBottom: 10}]}
+                            placeholderTextColor='#917F99'
+                        />
+                        <Button color='#00A8BA' title="Сменить пароль" onPress={() => changePassword(oldPassword, newPassword, confirmPassword, user.ID_user)} />
+                    </View>
+                )}
+                
+                <TouchableOpacity onPress = {() => openMenu()}><Text style = {[styles.end, {color:'#FF3C14'}]}>{label}</Text></TouchableOpacity>
             </View>
+            {!keyboardVisible && (
+                <View style = {[styles.transition]}>
+                    <TouchableOpacity onPress= {() => update()}style = {{margin: 10}}><Text style = {styles.end}>Изменить данные</Text></TouchableOpacity>
+                </View>
+            )}
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    button: {
-        tintColor: "#808080",
-    },
-    input: {
-        color: "#000000",
-    },
-
-    list: {
-        flex: 1,
-        margin: 10,
-    },
-    title: {
-        fontSize: 18,
-    },
-    end: {
-        textAlign: "center",
-        fontSize: 20,
-        color: "#008800",
-      }
-});
 
 export default ProfileSettings

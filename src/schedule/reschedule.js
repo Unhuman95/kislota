@@ -1,7 +1,9 @@
 import  React, { useState } from 'react';
 import {Button, View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Toast from 'react-native-toast-message';
 
+import styles from '../../design/style';
 import { rescheduleLesson } from '../DB/appel';
 
 const Reschedule = ({ route, navigation }) => {
@@ -40,21 +42,28 @@ const Reschedule = ({ route, navigation }) => {
     };
 
     const addLesson = (newTime, ID_lesson, date) => {
-        rescheduleLesson(ID_lesson, newTime, date);
-        navigation.goBack();
+        if (date != null && newTime != null){
+            rescheduleLesson(ID_lesson, newTime, date);
+            navigation.goBack();
+        }
+        else 
+            Toast.show({
+                type: 'error',
+                text1: 'Выбирете дату и время для переноса занятия',
+            });
     };
 
     return (
-        <View style={[styles.list]}>
+        <View style={[styles.view]}>
             <View>
-                <Text style={[styles.text]}>{title}</Text>
-                <Text style={[styles.text]}>Ученик: {kid}</Text>
+                <Text style={[styles.info]}>{title}</Text>
+                <Text style={[styles.info]}>Ученик: {kid}</Text>
             </View>
 
-            <View style={[styles.element]}>
-                <View style={{ height: 50 }}>
-                    <Text style={styles.title}>Дата проведения:</Text>
-                    <Button color={"#808080"} onPress={() => showMode('date')} title="Выбрать дату" />
+            <View style={[styles.action]}>
+                <View style={[styles.element]}>
+                    <Text style={styles.info}>Дата проведения:</Text>
+                    <Button color={"#00A8BA"} onPress={() => showMode('date')} title="Выбрать дату" />
                 </View>
                 {showDatePicker && (
                     <DateTimePicker
@@ -65,10 +74,10 @@ const Reschedule = ({ route, navigation }) => {
                         onChange={onDateChange}
                     />
                 )}
-
-                <View>
-                    <TouchableOpacity onLongPress={() => showMode('time')} style={[styles.datetime]}>
-                        <Text style={[styles.textDateTime]}>{oldTime}</Text>
+                <View style={[styles.element]}> 
+                    <Text style={[styles.info]}>Время проведения:</Text>
+                    <TouchableOpacity onLongPress={() => showMode('time')}>
+                        <Text style={[styles.info]}>{oldTime}</Text>
                     </TouchableOpacity>
                 </View>
                 {showTimePicker && (
@@ -81,51 +90,13 @@ const Reschedule = ({ route, navigation }) => {
                     />
                 )}
             </View>
-
-            <View style={{ flex: 1 }} />
-            <View>
-                <TouchableOpacity style={{ margin: 20 }} onPress={() => addLesson(newTime, ID_lesson, date)}>
+            <View style = {[styles.transition]}>
+                <TouchableOpacity  onPress={() => addLesson(newTime, ID_lesson, date)}>
                     <Text style={styles.end}>Перенести занятие</Text>
                 </TouchableOpacity>
             </View>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    text: {
-        fontSize: 18,
-        margin: 8,
-        textAlign: 'center'
-    },
-
-    listDateTime: {
-        alignItems: 'center',
-    },
-
-    textDateTime: {
-        fontSize: 18,
-        color: "#b00000"
-    },
-
-    element: {
-        flex: 1,
-        flexDirection: 'column',
-        margin: 10,
-        justifyContent: 'space-around'
-    },
-
-    list: {
-        flex: 1,
-        alignItems: 'center',
-
-    },
-
-    end: {
-        textAlign: "center",
-        fontSize: 20,
-        color: "#008800",
-      }
-});
 
 export default Reschedule

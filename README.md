@@ -1,4 +1,4 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+Kislota is a mobile application for automating work with the server of an online educational platform
 
 # Getting Started
 

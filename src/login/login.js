@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react'
 import { View, TouchableOpacity, Text, StyleSheet, TextInput } from 'react-native';
+import Toast from 'react-native-toast-message';
 
+import styles from '../../design/style';
 import { AuthContext } from '../context';
-import { connectSocket } from '../DB/appel';
 
 const Login = ({navigation}) => {
     const { signIn, loading, user } = useContext(AuthContext);
@@ -11,11 +12,18 @@ const Login = ({navigation}) => {
     const [password, setPassword] = useState();
 
     const Next = () => {
-        signIn(login, password);
+        if (login != null && password != null){
+            signIn(login, password);
 
-        if (!loading) {
-            navigation.navigate('tab_navigation');
-        }
+            if (!loading && user != null) {
+                navigation.navigate('tab_navigation');
+            }}
+        else {
+            Toast.show({
+                type: 'error',
+                text1: 'Введите логин и пароль!',
+            });
+            }
     };
 
     const LogUp = () => {
@@ -23,38 +31,43 @@ const Login = ({navigation}) => {
     };
 
     return(
-        <View style = {[styles.screen]}>
-            <View style = {[styles.table]}>
-                <Text style = {[styles.text, styles.In]}>Войдите в систему</Text>
+        <View style = {[styles.view]}>
+            <View style={{flex:0.5}}>
+                <Text style = {[styles.info]}>Войдите в систему</Text>
                 </View>
-            <View style = {[styles.view]}>
-
-                <View style = {styles.conteiner}>
-                    <Text style = {styles.title}>Логин:</Text>
+            <View style = {styles.action}>
+                <View style = {styles.element}>
+                    <Text style = {styles.info}>Логин:</Text>
                     <TextInput
                         style={styles.input}
                         value={login}
                         onChangeText={(value) => setLogin(value)}
+                        placeholder="Введите логин"
+                        placeholderTextColor='#917F99'
                     />
                 </View>
 
-                <View style = {styles.conteiner}>
-                    <Text style = {styles.title}>Пароль:</Text>
+                <View style = {styles.element}>
+                    <Text style = {styles.info}>Пароль:</Text>
                     <TextInput
                         style={styles.input}
                         value={password}
                         onChangeText={(value) => setPassword(value)}
+                        secureTextEntry
+                        placeholder="Введите пароль"
+                        placeholderTextColor='#917F99'
                     />
                 </View>
-
-                <TouchableOpacity onPress = {Next}><Text style = {[styles.text, styles.next]}>Вход</Text></TouchableOpacity>
-                <TouchableOpacity onPress = {LogUp}><Text style = {[styles.text, styles.next]}>Регистрация</Text></TouchableOpacity>
+            </View>
+            <View style = {styles.transition}>
+                <TouchableOpacity onPress = {Next}><Text style = {[styles.end]}>Вход</Text></TouchableOpacity>
+                <TouchableOpacity onPress = {LogUp}><Text style = {[styles.end, {color:'#FF3C14'}]}>Регистрация</Text></TouchableOpacity>
             </View>
         </View>
     )
 }
 
-const styles = StyleSheet.create({
+/*const styles = StyleSheet.create({
     screen: {
         flex: 1,
         justifyContent: 'space-between',
@@ -100,6 +113,6 @@ const styles = StyleSheet.create({
     next: {
         color: "#008800",
     }
-});
+});*/
 
 export default Login

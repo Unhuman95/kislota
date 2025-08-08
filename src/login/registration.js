@@ -1,8 +1,10 @@
 import  React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
+import Toast from 'react-native-toast-message';
 
-import { addAboniment, selectClass, selectTraning } from '../DB/appel';
+import styles from '../../design/style';
+import { addAboniment, selectClass, selectTraining } from '../DB/appel';
 
 const Registration = ({navigation}) => {
     const [name, setName] = useState(null);
@@ -17,8 +19,14 @@ const Registration = ({navigation}) => {
     let [purposes, setPurposes] = useState([]);
 
     const AddIntoStudent = () => {
-        addAboniment( name, mail, course, comment, discipline, purpose );
-        navigation.goBack();
+        if (name != null && mail != null && course != null && discipline != null && purpose != null){
+            addAboniment( name, mail, course, comment, discipline, purpose );
+            navigation.goBack();
+        }else
+            Toast.show({
+                type: 'error',
+                text1: 'Введите все необходимые данные',
+            });
     }
 
     useEffect(() => {
@@ -30,10 +38,10 @@ const Registration = ({navigation}) => {
               }));
             setDisciplines(disciplinesItem);
             
-            const purposesList = await selectTraning();
+            const purposesList = await selectTraining();
             const purposesItem = purposesList.map((item) => ({
-                label: item.title_traning,
-                value: item.ID_traning,
+                label: item.title_training,
+                value: item.ID_training,
               }));
             setPurposes(purposesItem);
         };
@@ -42,41 +50,49 @@ const Registration = ({navigation}) => {
     }, []);
 
     return(
-        <View style = {[styles.list]}>
+        <View style = {[styles.view]}>
             <View>
-                <Text style = {styles.title}>ФИО:</Text>
+                <Text style = {styles.name}>ФИО:</Text>
                 <TextInput
                     style={styles.input}
                     value={name}
                     onChangeText={(value) => setName(value)}
+                    placeholder="Введите ФИО"
+                    placeholderTextColor='#917F99'
                 />
             </View>
             <View>
-                <Text style = {styles.title}>E-Mail:</Text>
+                <Text style = {styles.name}>E-Mail:</Text>
                 <TextInput
                     style={styles.input}
                     value={mail}
                     onChangeText={(value) => setMail(value)}
+                    placeholder="Введите E-mail"
+                    placeholderTextColor='#917F99'
                 />
             </View>
             <View>
-                <Text style = {styles.title}>Класс:</Text>
+                <Text style = {styles.name}>Класс:</Text>
                 <TextInput
                     style={styles.input}
                     keyboardType='numeric'
                     value={course}
                     onChangeText={(value) => setCourse(value)}
+                    placeholder="Введите класс"
+                    placeholderTextColor='#917F99'
                 />
             </View>
             <View>
-                <Text style = {styles.title}>Дисциплина:</Text>
+                <Text style = {styles.name}>Дисциплина:</Text>
                 <RNPickerSelect
                     style={{
                         inputIOS: {
-                          color: 'black',  // Цвет текста для iOS
+                            color: '#FFFFFF',  
+                            fontSize: 20,  
                         },
                         inputAndroid: {
-                          color: 'black',  // Цвет текста для Android
+                          color: '#FFFFFF',  
+                            fontSize: 20,
                         },
                       }}
                     placeholder={{ label: "Выберете предмет", value: null }}
@@ -86,14 +102,16 @@ const Registration = ({navigation}) => {
                     />
             </View>
             <View>
-                <Text style = {styles.title}>Направление подготовки:</Text>
+                <Text style = {styles.name}>Направление подготовки:</Text>
                 <RNPickerSelect
                     style={{
                         inputIOS: {
-                          color: 'black',  // Цвет текста для iOS
+                            color: '#FFFFFF',  
+                            fontSize: 20,
                         },
                         inputAndroid: {
-                          color: 'black',  // Цвет текста для Android
+                            color: '#FFFFFF',  
+                            fontSize: 20,
                         },
                       }}
                     placeholder={{ label: "Цель обращения", value: null }}
@@ -104,24 +122,25 @@ const Registration = ({navigation}) => {
             </View>
                 
             <View>
-                <Text style = {styles.title}>Комментарии:</Text>
+                <Text style = {styles.name}>Комментарии:</Text>
                 <TextInput
                     style={styles.input}
                     multiline={true}
                     numberOfLines={4}
                     value={comment}
                     onChangeText={(value) => setComent(value)}
+                    placeholder="Введите комментарий"
+                    placeholderTextColor='#917F99'
                 />
             </View>
-            <View style={{flex: 1}} />
-            <View>
-              <TouchableOpacity onPress={AddIntoStudent} style = {{margin: 10}}><Text style = {styles.end}>Попробовать пробный урок</Text></TouchableOpacity>
+            <View style = {styles.transition}>
+              <TouchableOpacity onPress={AddIntoStudent} style = {styles.end}><Text style = {styles.end}>Попробовать пробный урок</Text></TouchableOpacity>
             </View>
         </View>
     )
 }
 
-const styles = StyleSheet.create({
+/*const styles = StyleSheet.create({
     button: {
         tintColor: "#808080",
     },
@@ -141,6 +160,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: "#008800",
       }
-});
+});*/
 
 export default Registration

@@ -3,6 +3,7 @@ import {Text, View, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import { useFocusEffect } from "@react-navigation/native";
 import { AuthContext } from '../context';
 
+import styles from '../../design/style';
 import { selectStudents } from '../DB/appel';
 
 export default function StudentList({ navigation }) {
@@ -30,8 +31,8 @@ export default function StudentList({ navigation }) {
     };
 
     return (
-      <View style = {[styles.container]}>
-        <View style = {[styles.schedule]}>
+      <View style = {[styles.view]}>
+        
           <FlatList
             keyExtractor={(item) => item.ID_user.toString()}
             data = {students}
@@ -44,7 +45,7 @@ export default function StudentList({ navigation }) {
               handleLongPress = {handleLongPress}
               />}
           />
-        </View>
+        
       </View>
     );
 }
@@ -54,30 +55,8 @@ const Item = ({ ID_student, full_name, Email, phone_number, school_class, handle
   return(
     <TouchableOpacity
         onPress={() => handleLongPress({ID_student, full_name, Email, phone_number, school_class})}>
-      <View style = {styles.item}>
-          <Text style = {styles.text}>{full_name}</Text>
+      <View style = {styles.container}>
+          <Text style = {styles.info}>{full_name}</Text>
       </View>
     </TouchableOpacity>
 )};
-
-const styles = StyleSheet.create({
-  schedule: {
-    flex: 1,
-    margin: 5,
-    padding: 3,
-  },
-  item: {
-    margin: 5,
-    padding: 8,
-    backgroundColor: '#ffffff'
-  },
-  text: {
-    fontSize: 18,
-},
-  container: {
-    flex: 1,
-    //backgroundColor: "#808080",
-    margin: 5,
-    flexDirection: 'column'
-  },
-})

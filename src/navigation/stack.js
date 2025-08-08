@@ -31,6 +31,19 @@ import Registration from '../login/registration';
 
 const Stack = createNativeStackNavigator();
 
+const screenOptions = {
+  headerStyle: {
+    backgroundColor: '#000000',
+  },
+  headerTitleStyle: {
+    fontWeight: 'bold',
+    fontSize: 22,
+    color: '#FFFFFF'
+  },
+  headerTitleAlign: 'center',
+  headerTintColor: '#FFFFFF',
+};
+
 const LoginStackNavigator = () => {
     return(
         <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -52,7 +65,7 @@ const LoginStackNavigator = () => {
 
 const ScheduleStackNavigator = () => {
     return(
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions= {screenOptions}>
         <Stack.Screen 
             name= "schedule" 
             component={ScheduleList}
@@ -70,7 +83,7 @@ const ScheduleStackNavigator = () => {
 
 const DataStackNavigator = () => {
         return(
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions= {screenOptions}>
             <Stack.Screen 
                 name = "link_list" 
                 component = {Data}
@@ -93,7 +106,7 @@ const DataStackNavigator = () => {
 
 const ChatStackNavigator = () => {
     return(
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions= {screenOptions}>
             <Stack.Screen 
                 name = "contacts" 
                 component = {Contacts}
@@ -105,54 +118,60 @@ const ChatStackNavigator = () => {
     </Stack.Navigator>
     )
 };
-    const ExtraStackNavigator = () => {
-        return(
-            <Stack.Navigator>
-                <Stack.Screen 
-                    name= "extra_function" 
-                    component={ExtraFunction}
-                    options={{title: "Меню"}}/>
-                <Stack.Screen 
-                    name= "create_schedule" 
-                    component={CreateSchedule}
-                    options={{title: "Добавть урок в расписание"}}/>
-                <Stack.Screen 
-                    name= "profile_settings" 
-                    component={ProfileSettings}
-                    options={{title: "Настройки профиля"}}/>
-                <Stack.Screen 
-                    name= "add_course" 
-                    component={AddIntoCourse}
-                    options={{title: "Добавить курс"}}/>
-                <Stack.Screen 
-                    name= "student_list" 
-                    component={StudentList}
-                    options={{title: "Список студентов"}}/>
-                <Stack.Screen 
-                    name= "student" 
-                    component={Student}
-                    options={{title: "Просмотр информации об ученике"}}/>
+const ExtraStackNavigator = () => {
+    return(
+        <Stack.Navigator screenOptions= {screenOptions}>
+            <Stack.Screen 
+                name= "extra_function" 
+                component={ExtraFunction}
+                options={{title: "Меню"}}/>
+            <Stack.Screen 
+                name= "create_schedule" 
+                component={CreateSchedule}
+                options={{title: "Добавть урок в расписание"}}/>
+            <Stack.Screen 
+                name= "profile_settings_stack" 
+                component={ProfileSettingsStack}
+                options={{title: "Настройки профиля", headerShown: false}}/>
+            <Stack.Screen 
+                name= "add_course" 
+                component={AddIntoCourse}
+                options={{title: "Добавить курс"}}/>
+            <Stack.Screen 
+                name= "student_list_stack" 
+                component={StudentListStack}
+                options={{title: "Список студентов", headerShown: false}}/>
 
-            </Stack.Navigator>
+        </Stack.Navigator>
 )};
 
-/*const DiaryStackNavigator = () => {
+const StudentListStack = () => {
     return(
-    <Stack.Navigator>
-        <Stack.Screen 
-            name= "diary" 
-            component={TaskList}
-            options={{title: "Дневник"}}/>
-        <Stack.Screen 
-            name= "edit_task" 
-            component={EditTask}
-            options={{title: "Редактирование"}}/>
-        <Stack.Screen 
-            name= "add_task" 
-            component={AddTask}
-            options={{title: "Добавить задание"}}/>
-    </Stack.Navigator>
-)};*/
+        <Stack.Navigator screenOptions= {screenOptions}>
+            <Stack.Screen 
+                name= "student_list" 
+                component={StudentList}
+                options={{title: "Список студентов"}}/>
+            <Stack.Screen 
+                name= "student" 
+                component={Student}
+                options={{title: "Просмотр информации об ученике"}}/>
+        </Stack.Navigator>
+)};
+
+const ProfileSettingsStack = () => {
+    return(
+        <Stack.Navigator screenOptions= {screenOptions}>
+            <Stack.Screen 
+                name= "profile_settings" 
+                component={ProfileSettings}
+                options={{title: "Настройки профиля"}}/>
+            <Stack.Screen 
+                name= "student" 
+                component={Student}
+                options={{title: "Просмотр информации об ученике"}}/>
+        </Stack.Navigator>
+)}
 
 export {ScheduleStackNavigator, ExtraStackNavigator,
         LoginStackNavigator, DataStackNavigator, ChatStackNavigator};

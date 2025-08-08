@@ -1,7 +1,8 @@
 import React, { useContext } from 'react'
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+
+import styles from '../../design/style';
 import { AuthContext } from '../context';
-import { CommonActions } from '@react-navigation/native';
 
 const Extra = ({navigation}) => {
     const { user, logout } = useContext(AuthContext);
@@ -12,41 +13,44 @@ const Extra = ({navigation}) => {
 
     return (
         <View style = {styles.view}>
-            <TouchableOpacity onPress={() => navigation.navigate('profile_settings')} style = {styles.element}>
-                <Text style = {styles.text}>Настройки профиля</Text>
-            </TouchableOpacity>
-            {user && user.role === 'student' && (
+            <View style= {{flex:1}}>
                 <View>
-                    <TouchableOpacity onPress={() => navigation.navigate('add_course')} style = {styles.element}>
-                        <Text style = {styles.text}>Добавить курс</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('profile_settings_stack')} style = {styles.element}>
+                        <Text style = {styles.func}>Настройки профиля</Text>
                     </TouchableOpacity>
                 </View>
-            )}
-            {user && (user.role === 'methodologist') && (
-                <View>
-                    <TouchableOpacity onPress={() => navigation.navigate('create_schedule')} style = {styles.element}>
-                        <Text style = {styles.text}>Создать расписание</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-            {user && (user.role === 'methodologist' || user.role === 'tutor') && (
-                <View>
-                    <TouchableOpacity onPress={() => navigation.navigate('student_list')} style = {styles.element}>
-                        <Text style = {styles.text}>Список студентов</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-            <View style={{flex: 1}}/>
-            <View>
-                <TouchableOpacity style = {{margin: 20}} onPress={signOut}><Text style = {styles.end}>Выход</Text></TouchableOpacity>
+                {user && user.role === 'student' && (
+                    <View>
+                        <TouchableOpacity onPress={() => navigation.navigate('add_course')} style = {styles.element}>
+                            <Text style = {styles.func}>Добавить курс</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+                {user && (user.role === 'methodologist') && (
+                    <View>
+                        <TouchableOpacity onPress={() => navigation.navigate('create_schedule')} style = {styles.element}>
+                            <Text style = {styles.func}>Создать расписание</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+                {user && (user.role === 'methodologist' || user.role === 'tutor') && (
+                    <View>
+                        <TouchableOpacity onPress={() => navigation.navigate('student_list_stack')} style = {styles.element}>
+                            <Text style = {styles.func}>Список студентов</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            </View>
+            <View style = {[styles.transition]}>
+                <TouchableOpacity onPress={signOut}><Text style = {styles.end}>Выход</Text></TouchableOpacity>
             </View>
         </View>
     )
 }
 
 
-const styles = StyleSheet.create({
-    text: {
+/*const styles = StyleSheet.create({
+    name: {
         fontSize: 18,
     },
     view: {
@@ -62,6 +66,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: "#008800",
     }
-}) 
+}) */
 
 export default Extra

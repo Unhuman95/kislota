@@ -1,86 +1,104 @@
-import  React, { useState } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import  React, { useState, useEffect } from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, TextInput, Keyboard, Alert} from 'react-native';
+import Toast from 'react-native-toast-message';
 
+import styles from '../../design/style';
 import { updateNote, deleteNote } from '../DB/appel';
 
 const Edit = ({ route, navigation }) => {
-    const { ID_data, title_data, discription, kid, title } = route.params;
+    const { ID_note, title_note, discription, kid, title } = route.params;
 
-    const [newTitleData, setTitleData] = useState(title_data);
+    const [newTitleData, setTitleData] = useState(title_note);
     const [newDiscription, setDiscription] = useState(discription);
 
+    const [keyboardVisible, setKeyboardVisible] = useState(false);
+    
+    useEffect(() => {
+        const showSub = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+        const hideSub = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+
+        return () => {
+            showSub.remove();
+            hideSub.remove();
+        };
+    }, []);
+
     const UpdateDate = () => {
-        updateNote(ID_data, newTitleData, newDiscription);
+        if (newTitleData != null && newDiscription != null) {
+            Alert.alert(
+                'Изменение заметки',
+                'Вы уверены, что хотите изменить заметку?',
+                [
+                    { text: 'Отмена', style: 'cancel' },
+                    { text: 'ОК', style: "destructive", onPress: () => {
+                        console.log('OK Pressed');
+                        updateNote(ID_note, newTitleData, newDiscription);
+                    }},
+                ],
+                { cancelable: true }
+            );
+        }
+        else 
+            Toast.show({
+                type: 'error',
+                text1: 'Данные не сохранены',
+            });
     }
 
     const dropNote = () => {
-        deleteNote(ID_data);
-        navigation.goBack();
+        Alert.alert(
+            'Удаление заметки',
+            'Вы уверены, что хотите удалить заметку?',
+            [
+                { text: 'Отмена', style: 'cancel' },
+                { text: 'ОК', style: "destructive", onPress: () => {
+                    console.log('OK Pressed');
+                    deleteNote(ID_note);
+                    navigation.goBack();
+                }},
+            ],
+            { cancelable: true }
+        );
     }
 
     return(
-        <View style = {[styles.list]}>
+        <View style = {[styles.view]}>
             <View>
-                <Text style = {[styles.text]}>{ title }</Text>
-                <Text style = {[styles.text]}>Ученик: { kid }</Text>
+                <Text style = {[styles.info, {fontWeight: '600'}]}>{ title }</Text>
+                <Text style = {[styles.info]}>Ученик: { kid }</Text>
             </View>
-            <View style = {[styles.element]}>
-            <Text style = {[styles.text]}>Тема</Text>
-                <TextInput
-                    style={styles.input}
-                    value={newTitleData}
-                    onChangeText={(value) => setTitleData(value)}
-                />
-
-            <Text style = {[styles.text]}>Описание</Text>
-                <TextInput
-                    style={styles.input}
-                    multiline={true}
-                    numberOfLines={4}
-                    value={newDiscription}
-                    onChangeText={(value) => setDiscription(value)}
-                />
+            <View style = {[styles.action]}>
+                <View style={[styles.element]}>
+                    <Text style = {[styles.info]}>Тема</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={newTitleData}
+                        onChangeText={(value) => setTitleData(value)}
+                        placeholder="Введите тему"
+                        placeholderTextColor='#000000'
+                    />
+                </View>
+                <View style={[styles.element]}>
+                    <Text style = {[styles.info]}>Описание</Text>
+                    <TextInput
+                        style={[styles.input, {height: 100}]}
+                        multiline={true}
+                        numberOfLines={4}
+                        value={newDiscription}
+                        onChangeText={(value) => setDiscription(value)}
+                        placeholder="Введите описание"
+                        placeholderTextColor='#000000'
+                    />
+                </View>
             </View>
-            <View style={{flex: 1}} />
-            <View>
-                <TouchableOpacity style = {{margin: 10}} onPress={UpdateDate}><Text style = {[styles.end, {color: "#008800"}]}>Изменить заметку по курсу</Text></TouchableOpacity>
-                <TouchableOpacity style = {{margin: 10, marginBottom: 20}} onPress={dropNote}><Text style = {[styles.end, {color: "#880000"}]}>Удалить заметку по курсу</Text></TouchableOpacity>
-            </View>            
+            {!keyboardVisible && (
+                <View style = {[styles.transition]}>
+                    <TouchableOpacity style = {{margin: 10}} onPress={UpdateDate}><Text style = {[styles.end]}>Изменить заметку по курсу</Text></TouchableOpacity>
+                    <TouchableOpacity style = {{margin: 10, marginBottom: 20}} onPress={dropNote}><Text style = {[styles.end, {color: "#FF3C14"}]}>Удалить заметку по курсу</Text></TouchableOpacity>
+                </View>
+            )}   
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    text: {
-        fontSize: 18,
-        margin: 8,
-        textAlign: 'center'
-    },
-    listDateTime: {
-        alignItems: 'center',
-    },
-    textDateTime: {
-        fontSize: 18,
-        color: "#b00000"
-    },
-    element: {
-        flex: 1,
-        flexDirection: 'column',
-        margin: 10,
-        justifyContent: 'space-around'
-    },
-    list: {
-        flex: 1,
-        alignItems: 'center',
-
-    },
-    input: {
-        color: "#000000",
-    },
-    end: {
-        textAlign: "center",
-        fontSize: 20,
-      }
-});
 
 export default Edit
