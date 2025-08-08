@@ -1,4 +1,4 @@
-Kislota is a mobile application for automating work with the server of an online educational platform
+# **Kislota** is a mobile application for automating work with the server of an online educational platform
 
 ## Development technologies
 
