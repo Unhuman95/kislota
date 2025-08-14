@@ -40,4 +40,10 @@ npm run ios
 yarn ios
 ```
 
+## Screenshots
 
+### login screen
+<img src="image/login.png" width="600" alt="login screen" >
+
+### edit screen
+<img src="image/edit_fragment.png" width="600" alt="edit screen" >
