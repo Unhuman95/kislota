@@ -1,11 +1,11 @@
 import  React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import Toast from 'react-native-toast-message';
 
 import styles from '../../design/style';
 import { AuthContext } from '../context';
-import { addCourse, selectClass, selectTraining } from '../DB/appel';
+import { addCourse, selectClass, selectTraining, addClass } from '../DB/appel';
 
 const AddIntoCourse = ({ navigation }) => {
   const { user } = useContext(AuthContext);
@@ -17,14 +17,28 @@ const AddIntoCourse = ({ navigation }) => {
   const [purposes, setPurposes] = useState([]);
 
   const IntoCourse = () => {
-    if (discipline != null && purpose != null){
-      addCourse(user.ID_user, discipline, purpose);
-      navigation.goBack();
+    if (discipline != null){
+      Alert.alert(
+        'Добавление предмета для обучения',
+        'Вы уверены, что хотите добавить новый предмет к вашей программе?',
+        [
+            { text: 'Отмена', style: 'cancel' },
+            { text: 'ОК', style: "destructive", onPress: () => {
+                console.log('OK Pressed');
+                if(user.role === 'student')
+                  addCourse(user.ID_user, discipline, purpose);
+                else
+                  addClass(discipline, user.ID_user);
+            }},
+        ],
+        { cancelable: true }
+      );
+      
     }
     else {
       Toast.show({
           type: 'error',
-          text1: 'Выберете предмет и направление подготовки',
+          text1: 'Выберете предмет',
       });
     }
   }
@@ -38,16 +52,18 @@ const AddIntoCourse = ({ navigation }) => {
           }));
         setDisciplines(disciplinesItem);
         
-        const purposesList = await selectTraining();
-        const purposesItem = purposesList.map((item) => ({
-            label: item.title_training,
-            value: item.ID_training
-          }));
-        setPurposes(purposesItem);
+        if(user.role === 'student'){
+          const purposesList = await selectTraining();
+          const purposesItem = purposesList.map((item) => ({
+              label: item.title_training,
+              value: item.ID_training
+            }));
+          setPurposes(purposesItem);
+        }
     };
     
     search()
-  }, []);
+  }, [user.role]);
 
   return(
     <View style = {[styles.view]}>
@@ -73,7 +89,8 @@ const AddIntoCourse = ({ navigation }) => {
                 value = {discipline}
                 />
         </View>
-        <View style = {[styles.element]}>
+        {user.role === 'student' && (
+          <View style = {[styles.element]}>
             <Text style = {styles.info}>Направление подготовки:</Text>
             <RNPickerSelect
                 style={{
@@ -93,7 +110,8 @@ const AddIntoCourse = ({ navigation }) => {
                 items = {purposes}
                 value={purpose}
                 />
-        </View>
+          </View>
+        )}
       </View>
       <View style = {[styles.transition]}>
         <TouchableOpacity onPress={IntoCourse} style = {styles.end}><Text style = {styles.end}>Попробовать пробный урок</Text></TouchableOpacity>

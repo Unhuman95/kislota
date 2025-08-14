@@ -79,19 +79,50 @@ const changePassword = async(old_password, new_password, confirm_password, ID_us
     catch (error) {
         console.error('Ошибка при изменении пароля:', error);
 }};
-// Регистрация
-const addAboniment = async (name, mail, course, comment, discipline, purpose) => {
+// Регистрация ученика
+const addAboniment = async (name, mail, course, comment, discipline, purpose, password) => {
     try{
         const res = await fetch(`${API_URL}add_aboniment`, {
             method: 'POST',
             headers:{
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name, mail, course, comment, discipline, purpose }),
+            body: JSON.stringify({ name, mail, course, comment, discipline, purpose, rawPassword: password }),
         });
 
         if(!res.ok) {
             throw new Error(`Ошибка сервера: ${res.status}`);
+        }
+        else {
+            Toast.show({
+                type: 'success',
+                text1: 'Регистрация прошла успешно',
+            });
+        }
+
+    } catch (error) {
+        console.error('Ошибка при добавлении данных:', error);
+    }
+};
+// Регистрация репетитора
+const addTutor = async (name, mail, discipline, hours, password) => {
+    try{
+        const res = await fetch(`${API_URL}add_tutor`, {
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, mail, discipline, hours, rawPassword: password }),
+        });
+
+        if(!res.ok) {
+            throw new Error(`Ошибка сервера: ${res.status}`);
+        }
+        else {
+            Toast.show({
+                type: 'success',
+                text1: 'Репетитор добавлен',
+            });
         }
 
     } catch (error) {
@@ -120,6 +151,33 @@ const addCourse = async(kid, discipline, purpose) => {
             Toast.show({
                 type: 'success',
                 text1: 'Курс добавлен',
+            });
+        }
+
+    } catch (error) {
+        console.error('Ошибка при добавлении данных:', error);
+    }
+};
+const addClass = async(tutor, discipline) => {
+    try{
+        const res = await fetch(`${API_URL}add_discipline`, {
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                discipline,
+                tutor
+            }),
+        });
+
+        if(!res.ok) {
+            throw new Error(`Ошибка сервера: ${res.status}`);
+        }
+        else {
+            Toast.show({
+                type: 'success',
+                text1: 'Предмет добавлен',
             });
         }
 
@@ -249,7 +307,6 @@ const groupLessons = (data) => {
 };
 // Добавление урока в расписание
 const addLesson = async(discipline, kid, teacher, time, day) => {
-    //const { discipline, kid, teacher, time, day } = lesson;
     const formattedTime = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`; 
     try{
         const res = await fetch(`${API_URL}add_lesson`, {
@@ -626,4 +683,4 @@ export { API_URL, addLesson, selectClass, selectTraining, selectStudents,
         deleteLesson, selectLesson, addCourse, rescheduleLesson, selectLink,
         selectData, selectUser, addAboniment, selectTutors, addNote,
         updateNote, deleteNote, selectContacts, updateTutor, selectMessages,
-        changePassword, updateUser, UpdateReschedule }
+        changePassword, updateUser, UpdateReschedule, addTutor, addClass }

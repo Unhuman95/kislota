@@ -19,17 +19,20 @@ const Extra = ({navigation}) => {
                         <Text style = {styles.func}>Настройки профиля</Text>
                     </TouchableOpacity>
                 </View>
-                {user && user.role === 'student' && (
+                {user && (user.role === 'student' || user.role === 'tutor') && (
                     <View>
                         <TouchableOpacity onPress={() => navigation.navigate('add_course')} style = {styles.element}>
                             <Text style = {styles.func}>Добавить курс</Text>
                         </TouchableOpacity>
                     </View>
                 )}
-                {user && (user.role === 'methodologist') && (
+                {user && user.role === 'methodologist' && (
                     <View>
                         <TouchableOpacity onPress={() => navigation.navigate('create_schedule')} style = {styles.element}>
                             <Text style = {styles.func}>Создать расписание</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('tutor_stack')} style = {styles.element}>
+                            <Text style = {styles.func}>Добавить репетитора</Text>
                         </TouchableOpacity>
                     </View>
                 )}
@@ -47,25 +50,5 @@ const Extra = ({navigation}) => {
         </View>
     )
 }
-
-
-/*const styles = StyleSheet.create({
-    name: {
-        fontSize: 18,
-    },
-    view: {
-        flex: 1,
-        flexDirection: "column",
-
-    },
-    element: {
-        margin: 10,
-    },
-    end: {
-        textAlign: "center",
-        fontSize: 20,
-        color: "#008800",
-    }
-}) */
 
 export default Extra

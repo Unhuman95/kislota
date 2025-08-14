@@ -5,10 +5,6 @@ import ScheduleList from '../schedule/schedule_list';
 import EditSchedule from '../schedule/edit_schedule';
 import Reschedule from '../schedule/reschedule';
 
-//import TaskList from '../diary/diary';
-//import EditTask from '../diary/edit_task';
-//import AddTask from '../diary/add_task';
-
 import CreateSchedule from '../profile/create_schedule';
 import ExtraFunction from '../profile/extra_function';
 import ProfileSettings from '../profile/profile_settings';
@@ -27,6 +23,8 @@ import ChatScreen from '../chat/dialogue';
 import Login from '../login/login';
 import TabNavigation from './tab';
 import Registration from '../login/registration';
+import RegistrationTutor from '../login/registration_tutor';
+import CreatePassword from '../login/password';
 
 
 const Stack = createNativeStackNavigator();
@@ -59,6 +57,10 @@ const LoginStackNavigator = () => {
                 name= "registration" 
                 component={Registration}
                 options={{title: "Регистрация"}}/>
+            <Stack.Screen 
+                name= "password" 
+                component={CreatePassword}
+                options={{title: "Создайте пароль"}}/>    
     </Stack.Navigator>
     )
 }
@@ -141,9 +143,28 @@ const ExtraStackNavigator = () => {
                 name= "student_list_stack" 
                 component={StudentListStack}
                 options={{title: "Список студентов", headerShown: false}}/>
+            <Stack.Screen 
+                name= "tutor_stack" 
+                component={TutorStack}
+                options={{title: "Регистрация", headerShown: false}}/>
 
         </Stack.Navigator>
 )};
+
+const TutorStack = () => {
+    return(
+        <Stack.Navigator screenOptions= {screenOptions}>
+            <Stack.Screen 
+                name= "add_tutor" 
+                component={RegistrationTutor}
+                options={{title: "Регистрация"}}/>
+            <Stack.Screen 
+                name= "password" 
+                component={CreatePassword}
+                options={{title: "Создайте пароль"}}/>    
+        </Stack.Navigator>
+    )
+}
 
 const StudentListStack = () => {
     return(

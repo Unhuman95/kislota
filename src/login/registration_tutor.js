@@ -4,24 +4,20 @@ import RNPickerSelect from 'react-native-picker-select';
 import Toast from 'react-native-toast-message';
 
 import styles from '../../design/style';
-import { addAboniment, selectClass, selectTraining } from '../DB/appel';
+import { selectClass } from '../DB/appel';
 
-const Registration = ({navigation}) => {
+const RegistrationTutor = ({navigation}) => {
     const [name, setName] = useState(null);
     const [mail, setMail] = useState(null);
-    const [course, setCourse] = useState(null);
-    const [comment, setComent] = useState(null);
+    const [hours, setHours] = useState(null);
 
     const [discipline, setDiscipline] = useState(null);
-    const [purpose, setPurpose] = useState(null);
 
     let [disciplines, setDisciplines] = useState([]);
-    let [purposes, setPurposes] = useState([]);
 
     const AddIntoStudent = () => {
-        if (name != null && mail != null && course != null && discipline != null && purpose != null){
-            //addAboniment( name, mail, course, comment, discipline, purpose );
-            navigation.navigate('password', {name, mail, course, comment, discipline, purpose, role: 'student'});
+        if (name != null && mail != null && discipline != null){
+            navigation.navigate('password', {name, mail, discipline, hours, role: 'tutor'});
         }else
             Toast.show({
                 type: 'error',
@@ -37,13 +33,6 @@ const Registration = ({navigation}) => {
                 value: item.ID_class,
               }));
             setDisciplines(disciplinesItem);
-            
-            const purposesList = await selectTraining();
-            const purposesItem = purposesList.map((item) => ({
-                label: item.title_training,
-                value: item.ID_training,
-              }));
-            setPurposes(purposesItem);
         };
         
         search()
@@ -72,13 +61,13 @@ const Registration = ({navigation}) => {
                 />
             </View>
             <View>
-                <Text style = {styles.name}>Класс:</Text>
+                <Text style = {styles.name}>Количество рабочьих часов:</Text>
                 <TextInput
                     style={styles.input}
+                    value={hours}
+                    onChangeText={(value) => setHours(value)}
+                    placeholder="Введите количество часов"
                     keyboardType='numeric'
-                    value={course}
-                    onChangeText={(value) => setCourse(value)}
-                    placeholder="Введите класс"
                     placeholderTextColor='#917F99'
                 />
             </View>
@@ -91,7 +80,7 @@ const Registration = ({navigation}) => {
                             fontSize: 20,  
                         },
                         inputAndroid: {
-                          color: '#FFFFFF',  
+                            color: '#FFFFFF',  
                             fontSize: 20,
                         },
                       }}
@@ -101,43 +90,11 @@ const Registration = ({navigation}) => {
                     value = {discipline}
                     />
             </View>
-            <View>
-                <Text style = {styles.name}>Направление подготовки:</Text>
-                <RNPickerSelect
-                    style={{
-                        inputIOS: {
-                            color: '#FFFFFF',  
-                            fontSize: 20,
-                        },
-                        inputAndroid: {
-                            color: '#FFFFFF',  
-                            fontSize: 20,
-                        },
-                      }}
-                    placeholder={{ label: "Цель обращения", value: null }}
-                    onValueChange={(value) => setPurpose(value)}
-                    items = {purposes}
-                    value={purpose}
-                    />
-            </View>
-                
-            <View>
-                <Text style = {styles.name}>Комментарии:</Text>
-                <TextInput
-                    style={styles.input}
-                    multiline={true}
-                    numberOfLines={4}
-                    value={comment}
-                    onChangeText={(value) => setComent(value)}
-                    placeholder="Введите комментарий"
-                    placeholderTextColor='#917F99'
-                />
-            </View>
             <View style = {styles.transition}>
-              <TouchableOpacity onPress={AddIntoStudent} style = {styles.end}><Text style = {styles.end}>Попробовать пробный урок</Text></TouchableOpacity>
+              <TouchableOpacity onPress={AddIntoStudent} style = {styles.end}><Text style = {styles.end}>Добавить репетитора</Text></TouchableOpacity>
             </View>
         </View>
     )
 }
 
-export default Registration
+export default RegistrationTutor
